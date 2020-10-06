@@ -2,6 +2,7 @@ var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function(app, db) {
 
+    // get a note
     app.get('/notes/:id', (req, res) => {
         const id = req.params.id;
 
@@ -17,7 +18,7 @@ module.exports = function(app, db) {
     
     })
 
-
+    // delete a note
     app.delete('/notes/:id', (req, res) => {
         const id = req.params.id;
 
@@ -33,6 +34,7 @@ module.exports = function(app, db) {
     
     })
 
+    // update a note
     app.put('/notes/:id', (req, res) => {
         const id = req.params.id;
 
@@ -52,7 +54,7 @@ module.exports = function(app, db) {
     
     })
 
-
+    // create a note
     app.post('/notes', (req, res) => {
         const note = {
             text: req.body.body,
