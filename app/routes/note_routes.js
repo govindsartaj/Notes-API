@@ -2,6 +2,22 @@ var ObjectID = require('mongodb').ObjectID;
 
 module.exports = function(app, db) {
 
+
+    app.get('/', (req, res) => {
+        res.send("GORL");
+    })
+
+
+    app.get('/notes', (req, res) => {
+
+        let notes = [];
+        db.collection('notes').find().sort( { created : -1}).toArray((err, result) => {
+            res.send(result);
+        })
+        
+    })
+    
+
     // get a note
     app.get('/notes/:id', (req, res) => {
         const id = req.params.id;
@@ -24,31 +40,36 @@ module.exports = function(app, db) {
 
         const details = { '_id': new ObjectID(id)};
     
-        db.collection('notes').remove(details, (err, item) => {
+        db.collection('notes').removeOne(details, (err, item) => {
             if (err) {
                 res.send({ 'error': 'Error has occured'});
             } else {
-                res.send(`Node ${id} deleted`);
+                res.send(`Note ${id} deleted`);
             }
         })
     
     })
 
     // update a note
-    app.put('/notes/:id', (req, res) => {
+    app.patch('/notes/:id', (req, res) => {
         const id = req.params.id;
 
         const details = { '_id': new ObjectID(id)};
         const note = {
-            text: req.body.body,
-            title: req.body.title
+            $set: {
+                noteBody: req.body.body,
+                title: req.body.title,
+                updated: Date.now()
+            }
         }
     
-        db.collection('notes').update(details, note, (err, item) => {
+        db.collection('notes').updateOne(details, note, (err, item) => {
             if (err) {
                 res.send({ 'error': 'Error has occured'});
+            } else if (item.result.n === 0) {
+                res.send(`Note ${id} does not exist`);
             } else {
-                res.send(item);
+                res.send(`Note ${id} updated`);
             }
         })
     
@@ -57,11 +78,13 @@ module.exports = function(app, db) {
     // create a note
     app.post('/notes', (req, res) => {
         const note = {
-            text: req.body.body,
-            title: req.body.title
+            noteBody: req.body.body,
+            title: req.body.title,
+            created: Date.now(),
+            updated: Date.now()
         }
 
-        db.collection('notes').insert(note, (err, result) => {
+        db.collection('notes').insertOne(note, (err, result) => {
             if (err) {
                 res.send({ 'error': 'Error has occured'});
             } else {
