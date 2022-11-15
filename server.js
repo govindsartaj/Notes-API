@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 const client = new MongoClient(db.url, { useNewUrlParser: true ,  useUnifiedTopology: true })
 client.connect(err => {
   if (err) return console.log(err)
-  const db = client.db("databaseName")
+  const db = client.db("notes")
   require('./app/routes')(app, db);
   app.listen(port, () => {
     console.log("We are live on " + port);

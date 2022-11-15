@@ -8,13 +8,9 @@ module.exports = function(app, db) {
     })
 
 
-    app.get('/notes', (req, res) => {
-
-        let notes = [];
-        db.collection('notes').find().sort( { created : -1}).toArray((err, result) => {
-            res.send(result);
-        })
-        
+    app.get('/notes', async (req, res) => {
+        const notes = await db.collection('notes').find().sort( { created : -1}).toArray()
+        res.send(JSON.stringify(notes))
     })
     
 
